@@ -47,7 +47,7 @@ jobs:
         id: cache-restore
         uses: actions/cache/restore@v4
         with:
-          path: ${{ runner.temp }}/uv_cache
+          path: ${{ runner.temp }}/.venv
           key: uv-${{ github.run_id }}
           restore-keys:
             uv-
@@ -61,7 +61,7 @@ jobs:
         id: cache-save
         uses: actions/cache/save@v4
         with:
-          path: ${{ runner.temp }}/uv_cache
+          path: ${{ runner.temp }}/.venv
           key: ${{ steps.cache-restore.outputs.cache-primary-key }}
 
       - name: Upload artifact
