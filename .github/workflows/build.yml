@@ -1,40 +1,80 @@
-name: Build And Release On Tag
-
+name: Build and deploy
 on:
-  workflow_dispatch:
   push:
-    tags:
-      - '*'
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
   id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout latest commit
-        uses: actions/checkout@v4
-        with:
-            show-progress: true
-            lfs: false
+      - name: Checkout
+        uses: actions/checkout@v5
 
-      - name: Setup Python 3.10 x64
-        uses: actions/setup-python@v5
-        with:
-            python-version: '3.10'
-            architecture: 'x64'
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
 
-      - name: Build the project
+      - name: Configure Git
         run: |
-          pip install pre-commit
-          make create-dev
-          source env/bin/activate
-          make build
-          make package
+          git config core.quotepath false
 
-      - name: Release the project
-        uses: softprops/action-gh-release@v2
+      - name: Setup Python
+        uses: actions/setup-python@v6
         with:
-          files: ./dist/src
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install uv && \
+          python3 -m uv sync
+
+      - name: Cache restore
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/uv_cache
+          key: uv-${{ github.run_id }}
+          restore-keys:
+            uv-
+
+      - name: Build the site
+        run: |
+          ./.venv/bin/sphinx-build --write-all dlr4s_book build
+
+      - name: Cache save
+        id: cache-save
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/uv_cache
+          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
