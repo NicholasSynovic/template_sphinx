@@ -1,25 +1,23 @@
 [project]
-name = "src"
+name = "template_sphinx"
 version = "0.0.0"
 description = "Hello World"
 authors = [{ name = "Nicholas M. Synovic", email = "nicholas.synovic@gmail.com" }]
 requires-python = "~=3.13"
 readme = "README.md"
-license = "AGPL-3.0-only"
 keywords = ["Template"]
 classifiers = [
     "Development Status :: 1 - Planning",
     "License :: OSI Approved :: GNU Affero General Public License v3",
     "Programming Language :: Python :: 3.13"
 ]
+dependencies = [
+    "sphinx>=8.2.3",
+]
 
 [project.urls]
 Homepage = "https://github.com/NicholasSynovic/template_python"
 Repository = "https://github.com/NicholasSynovic/template_python"
-
-[project.scripts]
-src = "src.main:main"
-
 
 [build-system]
 requires = ["hatchling"]

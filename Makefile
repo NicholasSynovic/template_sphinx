@@ -3,7 +3,7 @@ build_project:
 	rm -rf dist/
 	uv build
 	uv pip install dist/*.tar.gz
-	sphinx-build --write-all dlr4s_book build
+	sphinx-build --write-all template_sphinx build
 
 create-dev:
 	pre-commit install
