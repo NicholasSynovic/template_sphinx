@@ -50,6 +50,19 @@ Any time that a commit is pushed to GitHub from the `main` branch, the
 [`build.yml`](.github/workflows/build.yml) workflow is executed which builds the
 project and deploys it to GitHub Pages.
 
+You will need to modify the ReStructured Text directory in the
+[`build.yml`](.github/workflows/build.yml) from `template_sphinx` to the name of
+your project's directory. You can find the line to modify by searching for
+`# TODO` in the [`build.yml`](.github/workflows/build.yml) file. An example of
+what to look for is this code block:
+
+```yaml
+- name: Build the site
+  run: |
+    ./.venv/bin/sphinx-build --write-all template_sphinx build
+    # TODO: Change `template_sphinx` to the source directory
+```
+
 You can also deploy the project from the `main` branch at any time (so long as
 the `workflow_dispatch` event is included in the
 [`build.yml`](.github/workflows/build.yml) file) from the GitHub Actions page
